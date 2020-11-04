@@ -54,7 +54,7 @@ func TestExportTimeSeriesWithDifferentLabels(t *testing.T) {
 
 		// Set empty labels to avoid the opencensus-task
 		DefaultMonitoringLabels: &Labels{},
-		MapResource:             defaultMapResource,
+		MapResource:             DefaultMapResource,
 	}
 	se, err := newStatsExporter(exporterOptions)
 	if err != nil {
@@ -260,7 +260,7 @@ func TestProtoMetricToCreateTimeSeriesRequest(t *testing.T) {
 				},
 			},
 			statsExporter: &statsExporter{
-				o: Options{ProjectID: "foo", MapResource: defaultMapResource},
+				o: Options{ProjectID: "foo", MapResource: DefaultMapResource},
 			},
 			want: []*monitoringpb.CreateTimeSeriesRequest{
 				{
@@ -331,7 +331,7 @@ func TestProtoMetricToCreateTimeSeriesRequest(t *testing.T) {
 				},
 			},
 			statsExporter: &statsExporter{
-				o: Options{ProjectID: "foo", MapResource: defaultMapResource},
+				o: Options{ProjectID: "foo", MapResource: DefaultMapResource},
 			},
 			want: []*monitoringpb.CreateTimeSeriesRequest{
 				{
@@ -446,7 +446,7 @@ func TestProtoMetricWithDifferentResource(t *testing.T) {
 				},
 			},
 			statsExporter: &statsExporter{
-				o: Options{ProjectID: "foo", MapResource: defaultMapResource},
+				o: Options{ProjectID: "foo", MapResource: DefaultMapResource},
 			},
 			want: []*monitoringpb.CreateTimeSeriesRequest{
 				{
@@ -518,7 +518,7 @@ func TestProtoMetricWithDifferentResource(t *testing.T) {
 				},
 			},
 			statsExporter: &statsExporter{
-				o: Options{ProjectID: "foo", MapResource: defaultMapResource},
+				o: Options{ProjectID: "foo", MapResource: DefaultMapResource},
 			},
 			want: []*monitoringpb.CreateTimeSeriesRequest{
 				{
@@ -618,6 +618,26 @@ func TestProtoToMonitoringMetricDescriptor(t *testing.T) {
 				Labels:      []*labelpb.LabelDescriptor{},
 				DisplayName: "OpenCensus/with_metric_descriptor",
 				Description: "This is with metric descriptor",
+				Unit:        "By",
+			},
+		},
+		{
+			in: &metricspb.Metric{
+				MetricDescriptor: &metricspb.MetricDescriptor{
+					Name:        "external.googleapis.com/user/with_domain",
+					Description: "With metric descriptor and domain prefix",
+					Unit:        "By",
+				},
+			},
+			statsExporter: &statsExporter{
+				o: Options{ProjectID: "test"},
+			},
+			want: &googlemetricpb.MetricDescriptor{
+				Name:        "projects/test/metricDescriptors/external.googleapis.com/user/with_domain",
+				Type:        "external.googleapis.com/user/with_domain",
+				Labels:      []*labelpb.LabelDescriptor{},
+				DisplayName: "external.googleapis.com/user/with_domain",
+				Description: "With metric descriptor and domain prefix",
 				Unit:        "By",
 			},
 		},
